@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Financeit Calculator</title>
+</head>
+<body>
+  <h2>Financeit Loan Calculator</h2>
+  <form id="calc-form">
+    <label>Loan Amount: <input type="number" id="amount" required /></label><br/>
+    <label>Term (months): <input type="number" id="term" required /></label><br/>
+    <label>Interest Rate (%): <input type="number" id="rate" step="0.01" required /></label><br/>
+    <button type="submit">Calculate</button>
+  </form>
+  <pre id="output"></pre>
+
+  <script>
+    const API_URL = "https://training.financeit.ca/api/v3/calculator/calculate";
+    const AUTH_TOKEN = "YOUR_SANDBOX_API_TOKEN"; // Replace with your actual Financeit sandbox token
+
+    document.getElementById("calc-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const amount = parseFloat(document.getElementById("amount").value);
+      const term = parseInt(document.getElementById("term").value);
+      const rate = parseFloat(document.getElementById("rate").value);
+
+      const payload = {
+        principal: amount,
+        amortization_period: term,
+        interest_rate: rate,
+        payment_frequency: "monthly",
+        include_tax: false
+      };
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${AUTH_TOKEN}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
